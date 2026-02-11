@@ -63,6 +63,133 @@
         .checkbox-group input {
             width: auto;
         }
+        
+        /* Calendar Styles */
+        .calendar-container {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .calendar-header h3 {
+            margin: 0;
+            color: #333;
+            font-size: 1.1em;
+        }
+        .calendar-nav {
+            display: flex;
+            gap: 10px;
+        }
+        .calendar-nav button {
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 15px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+        .calendar-nav button:hover {
+            background: #5a6fd6;
+        }
+        .calendar-nav button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .calendar-weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+        .calendar-weekdays span {
+            text-align: center;
+            font-weight: bold;
+            color: #666;
+            font-size: 0.85em;
+            padding: 5px;
+        }
+        .calendar-days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+        }
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-size: 0.9em;
+            color: #999;
+            background: transparent;
+            border: none;
+            cursor: default;
+        }
+        .calendar-day.saturday {
+            background: #e8f4fd;
+            color: #1a5a8a;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        .calendar-day.saturday:hover {
+            background: #667eea;
+            color: white;
+            transform: scale(1.1);
+        }
+        .calendar-day.selected {
+            background: #25D366;
+            color: white;
+        }
+        .calendar-day.selected:hover {
+            background: #1da851;
+        }
+        .calendar-day.empty {
+            visibility: hidden;
+        }
+        .selected-date-display {
+            text-align: center;
+            padding: 10px;
+            background: #e8f4fd;
+            border-radius: 10px;
+            margin-top: 15px;
+            color: #1a5a8a;
+            font-weight: 600;
+        }
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 10px;
+            font-size: 0.8em;
+            color: #666;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        .legend-dot.available {
+            background: #e8f4fd;
+            border: 2px solid #1a5a8a;
+        }
+        .legend-dot.selected {
+            background: #25D366;
+        }
+        
         .result {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
@@ -155,20 +282,37 @@
         </div>
 
         <div class="form-group">
-            <label>📅 Periodo</label>
-            <select id="periodo" onchange="calcolaPreventivo()">
-                <option value="maggio">Maggio (1-31)</option>
-                <option value="giugno">Giugno (1-30)</option>
-                <option value="luglio1">Luglio 1-12</option>
-                <option value="luglio2">Luglio 12-19</option>
-                <option value="luglio3">Luglio 19-26</option>
-                <option value="luglio4">Luglio 26 - Ago 2</option>
-                <option value="agosto1">Agosto 2-9</option>
-                <option value="agosto2">Agosto 9-16</option>
-                <option value="agosto3">Agosto 16-23</option>
-                <option value="agosto4">Agosto 23-30</option>
-                <option value="settembre">Settembre (1-30)</option>
-            </select>
+            <label>📅 Seleziona data check-in (solo Sabato)</label>
+            <div class="calendar-container">
+                <div class="calendar-header">
+                    <button class="calendar-nav" id="prevMonth" onclick="changeMonth(-1)">◀</button>
+                    <h3 id="monthYear"></h3>
+                    <button class="calendar-nav" id="nextMonth" onclick="changeMonth(1)">▶</button>
+                </div>
+                <div class="calendar-weekdays">
+                    <span>Lun</span>
+                    <span>Mar</span>
+                    <span>Mer</span>
+                    <span>Gio</span>
+                    <span>Ven</span>
+                    <span>Sab</span>
+                    <span>Dom</span>
+                </div>
+                <div class="calendar-days" id="calendarDays"></div>
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-dot available"></div>
+                        <span>Check-in disponibile</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-dot selected"></div>
+                        <span>Selezionato</span>
+                    </div>
+                </div>
+                <div class="selected-date-display" id="selectedDateDisplay">
+                    👆 Clicca su un sabato per selezionare il check-in
+                </div>
+            </div>
         </div>
 
         <div class="form-group">
@@ -231,6 +375,7 @@
     </div>
 
     <script>
+        // Prezzi settimanali per appartamento e periodo
         const prezzi = {
             A1: { maggio: 300, giugno: 350, luglio1: 450, luglio2: 500, luglio3: 550, luglio4: 600, agosto1: 750, agosto2: 900, agosto3: 900, agosto4: 600, settembre: 350 },
             A2: { maggio: 300, giugno: 350, luglio1: 450, luglio2: 500, luglio3: 550, luglio4: 600, agosto1: 750, agosto2: 900, agosto3: 900, agosto4: 600, settembre: 350 },
@@ -247,19 +392,144 @@
             agosto1: 10, agosto2: 10, agosto3: 10, agosto4: 10, settembre: 50
         };
 
-        const nomiPeriodi = {
-            maggio: "Maggio", giugno: "Giugno", luglio1: "Luglio 1-12", luglio2: "Luglio 12-19",
-            luglio3: "Luglio 19-26", luglio4: "Luglio 26 - Agosto 2", agosto1: "Agosto 2-9",
-            agosto2: "Agosto 9-16", agosto3: "Agosto 16-23", agosto4: "Agosto 23-30", settembre: "Settembre"
-        };
+        // Mesi disponibili (Maggio - Settembre 2026)
+        const mesiDisponibili = [
+            { anno: 2026, mese: 4, nome: 'Maggio 2026' },
+            { anno: 2026, mese: 5, nome: 'Giugno 2026' },
+            { anno: 2026, mese: 6, nome: 'Luglio 2026' },
+            { anno: 2026, mese: 7, nome: 'Agosto 2026' },
+            { anno: 2026, mese: 8, nome: 'Settembre 2026' }
+        ];
 
+        let currentMonthIndex = 0;
+        let selectedDate = null;
         let preventivo = {};
 
+        // Funzione per determinare il periodo in base alla data
+        function getPeriodo(date) {
+            const mese = date.getMonth();
+            const giorno = date.getDate();
+            
+            if (mese === 4) return 'maggio'; // Maggio
+            if (mese === 5) return 'giugno'; // Giugno
+            if (mese === 6) { // Luglio
+                if (giorno <= 11) return 'luglio1';
+                if (giorno <= 18) return 'luglio2';
+                if (giorno <= 25) return 'luglio3';
+                return 'luglio4';
+            }
+            if (mese === 7) { // Agosto
+                if (giorno <= 8) return 'agosto1';
+                if (giorno <= 15) return 'agosto2';
+                if (giorno <= 22) return 'agosto3';
+                return 'agosto4';
+            }
+            if (mese === 8) return 'settembre'; // Settembre
+            return 'maggio';
+        }
+
+        function getNomePeriodo(periodo) {
+            const nomi = {
+                maggio: "Maggio", giugno: "Giugno", luglio1: "Luglio (1ª sett.)", luglio2: "Luglio (2ª sett.)",
+                luglio3: "Luglio (3ª sett.)", luglio4: "Luglio (4ª sett.)", agosto1: "Agosto (1ª sett.)",
+                agosto2: "Agosto (2ª sett.)", agosto3: "Agosto (3ª sett.)", agosto4: "Agosto (4ª sett.)", settembre: "Settembre"
+            };
+            return nomi[periodo] || periodo;
+        }
+
+        function formatDate(date) {
+            const giorni = ['Domenica', 'Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'];
+            const mesi = ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 
+                         'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'];
+            return `${giorni[date.getDay()]} ${date.getDate()} ${mesi[date.getMonth()]} ${date.getFullYear()}`;
+        }
+
+        function formatDateShort(date) {
+            return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
+        }
+
+        function renderCalendar() {
+            const meseCorrente = mesiDisponibili[currentMonthIndex];
+            const primoGiorno = new Date(meseCorrente.anno, meseCorrente.mese, 1);
+            const ultimoGiorno = new Date(meseCorrente.anno, meseCorrente.mese + 1, 0);
+            
+            document.getElementById('monthYear').textContent = meseCorrente.nome;
+            
+            // Abilita/disabilita pulsanti navigazione
+            document.getElementById('prevMonth').disabled = currentMonthIndex === 0;
+            document.getElementById('nextMonth').disabled = currentMonthIndex === mesiDisponibili.length - 1;
+            
+            const calendarDays = document.getElementById('calendarDays');
+            calendarDays.innerHTML = '';
+            
+            // Giorni vuoti prima del primo giorno del mese
+            // getDay() restituisce 0 per Domenica, ma vogliamo Lunedì come primo giorno
+            let startDay = primoGiorno.getDay();
+            startDay = startDay === 0 ? 6 : startDay - 1; // Converti a Lunedì = 0
+            
+            for (let i = 0; i < startDay; i++) {
+                const emptyDay = document.createElement('div');
+                emptyDay.className = 'calendar-day empty';
+                calendarDays.appendChild(emptyDay);
+            }
+            
+            // Giorni del mese
+            for (let day = 1; day <= ultimoGiorno.getDate(); day++) {
+                const date = new Date(meseCorrente.anno, meseCorrente.mese, day);
+                const dayEl = document.createElement('div');
+                dayEl.className = 'calendar-day';
+                dayEl.textContent = day;
+                
+                // Sabato = 6
+                if (date.getDay() === 6) {
+                    dayEl.className += ' saturday';
+                    dayEl.onclick = () => selectDate(date);
+                    
+                    // Controlla se è selezionato
+                    if (selectedDate && 
+                        selectedDate.getDate() === day && 
+                        selectedDate.getMonth() === meseCorrente.mese &&
+                        selectedDate.getFullYear() === meseCorrente.anno) {
+                        dayEl.className += ' selected';
+                    }
+                }
+                
+                calendarDays.appendChild(dayEl);
+            }
+        }
+
+        function changeMonth(delta) {
+            currentMonthIndex += delta;
+            if (currentMonthIndex < 0) currentMonthIndex = 0;
+            if (currentMonthIndex >= mesiDisponibili.length) currentMonthIndex = mesiDisponibili.length - 1;
+            renderCalendar();
+        }
+
+        function selectDate(date) {
+            selectedDate = date;
+            renderCalendar();
+            
+            // Calcola check-out (sabato successivo)
+            const checkOut = new Date(date);
+            checkOut.setDate(checkOut.getDate() + 7);
+            
+            document.getElementById('selectedDateDisplay').innerHTML = 
+                `✅ Check-in: <strong>${formatDate(date)}</strong>`;
+            
+            calcolaPreventivo();
+        }
+
         function calcolaPreventivo() {
+            if (!selectedDate) {
+                document.getElementById('dettagli').innerHTML = '👆 Seleziona una data di check-in';
+                document.getElementById('totale').textContent = '€ --';
+                document.getElementById('spiaggia').innerHTML = '';
+                return;
+            }
+
             const appSelect = document.getElementById('appartamento');
             const app = appSelect.value;
             const maxPersone = parseInt(appSelect.options[appSelect.selectedIndex].dataset.max);
-            const periodo = document.getElementById('periodo').value;
             const settimane = parseInt(document.getElementById('settimane').value);
             const persone = parseInt(document.getElementById('persone').value);
             const biancheria = document.getElementById('biancheria').checked;
@@ -268,6 +538,13 @@
             // Warning capacità
             const warningEl = document.getElementById('capacityWarning');
             warningEl.style.display = persone > maxPersone ? 'block' : 'none';
+
+            // Determina periodo dalla data selezionata
+            const periodo = getPeriodo(selectedDate);
+            
+            // Calcola check-out
+            const checkOut = new Date(selectedDate);
+            checkOut.setDate(checkOut.getDate() + (7 * settimane));
 
             // Calcoli
             const prezzoBase = prezzi[app][periodo] * settimane;
@@ -286,7 +563,9 @@
             // Salva preventivo per WhatsApp
             preventivo = {
                 appartamento: app,
-                periodo: nomiPeriodi[periodo],
+                checkIn: formatDateShort(selectedDate),
+                checkOut: formatDateShort(checkOut),
+                periodo: getNomePeriodo(periodo),
                 settimane: settimane,
                 persone: persone,
                 biancheria: biancheria,
@@ -300,7 +579,8 @@
             };
 
             // Mostra risultato
-            let dettagli = `Appartamento ${app} • ${nomiPeriodi[periodo]}<br>`;
+            let dettagli = `Appartamento ${app} • ${getNomePeriodo(periodo)}<br>`;
+            dettagli += `📅 ${formatDateShort(selectedDate)} → ${formatDateShort(checkOut)}<br>`;
             dettagli += `${settimane} settimana/e • ${persone} persona/e<br><br>`;
             dettagli += `Soggiorno: €${prezzoBase}<br>`;
             dettagli += `Pulizie: €${pulizie}`;
@@ -315,9 +595,15 @@
         function inviaWhatsApp(e) {
             e.preventDefault();
             
+            if (!selectedDate) {
+                alert('Seleziona prima una data di check-in!');
+                return;
+            }
+            
             let messaggio = `Ciao! Vorrei prenotare:\n\n`;
             messaggio += `🏠 Appartamento: ${preventivo.appartamento}\n`;
-            messaggio += `📅 Periodo: ${preventivo.periodo}\n`;
+            messaggio += `📅 Check-in: ${preventivo.checkIn}\n`;
+            messaggio += `📅 Check-out: ${preventivo.checkOut}\n`;
             messaggio += `📆 Settimane: ${preventivo.settimane}\n`;
             messaggio += `👥 Persone: ${preventivo.persone}\n`;
             messaggio += `🛏️ Biancheria: ${preventivo.biancheria ? 'Sì' : 'No'}\n`;
@@ -330,7 +616,8 @@
             window.open(url, '_blank');
         }
 
-        // Calcola al caricamento
+        // Inizializza
+        renderCalendar();
         calcolaPreventivo();
     </script>
 </body>
