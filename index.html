@@ -381,6 +381,14 @@
         let checkInDate = null;
         let checkOutDate = null;
 
+        // Funzione per formattare data in formato locale (evita bug UTC)
+        function toLocalDateStr(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
         function renderCalendar() {
             const calendar = document.getElementById('calendar');
             const monthLabel = document.getElementById('calendar-month');
@@ -409,7 +417,7 @@
             
             for (let day = 1; day <= daysInMonth; day++) {
                 const date = new Date(currentYear, currentMonth, day);
-                const dateStr = date.toISOString().split('T')[0];
+                const dateStr = toLocalDateStr(date);
                 const isSaturday = date.getDay() === 6;
                 const isInSeason = periodiDate.hasOwnProperty(dateStr);
                 
@@ -508,7 +516,7 @@
             const end = new Date(endStr);
             
             while (current < end) {
-                const dateStr = current.toISOString().split('T')[0];
+                const dateStr = toLocalDateStr(current);
                 if (periodiDate[dateStr]) {
                     periods.push({
                         date: dateStr,
