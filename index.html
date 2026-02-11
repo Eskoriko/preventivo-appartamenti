@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calcola Preventivo - Appartamenti 2026</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.8em;
+        }
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #444;
+        }
+        select, input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        select:focus, input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .checkbox-group:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+        .checkbox-group input {
+            width: auto;
+            cursor: pointer;
+        }
+        .checkbox-group label {
+            margin: 0;
+            cursor: pointer;
+            font-weight: normal;
+        }
+        .result-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-top: 30px;
+            text-align: center;
+        }
+        .result-box h2 {
+            margin: 0 0 15px 0;
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        .total-price {
+            font-size: 3em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .price-details {
+            background: rgba(255,255,255,0.15);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            text-align: left;
+            font-size: 0.9em;
+        }
+        .price-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+        .price-row:last-child {
+            border-bottom: none;
+        }
+        .beach-discount {
+            background: #4CAF50;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            text-align: center;
+        }
+        .beach-discount strong {
+            display: block;
+            font-size: 1.2em;
+        }
+        .emoji {
+            font-size: 1.3em;
+        }
+        .note {
+            text-align: center;
+            color: #888;
+            font-size: 0.85em;
+            margin-top: 20px;
+        }
+        .capacity-info {
+            font-size: 0.85em;
+            color: #666;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏖️ Calcola Preventivo</h1>
+        <p class="subtitle">Appartamenti Estate 2026</p>
+        
+        <div class="form-group">
+            <label><span class="emoji">🏠</span> Appartamento</label>
+            <select id="appartamento" onchange="calcolaPreventivo()">
+                <option value="">Seleziona...</option>
+                <option value="A1">A1 (2-4 persone)</option>
+                <option value="A2">A2 (2-4 persone)</option>
+                <option value="B">B (4 persone)</option>
+                <option value="BB">BB (2 persone)</option>
+                <option value="C">C (2 persone)</option>
+                <option value="D">D (4 persone)</option>
+                <option value="E">E (2-4 persone)</option>
+                <option value="F">F (2-4 persone)</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label><span class="emoji">📅</span> Periodo</label>
+            <select id="periodo" onchange="calcolaPreventivo()">
+                <option value="">Seleziona...</option>
+                <option value="maggio">Maggio</option>
+                <option value="giugno">Giugno</option>
+                <option value="luglio1">Luglio 1ª-2ª settimana</option>
+                <option value="luglio2">Luglio 3ª-4ª settimana</option>
+                <option value="agosto1">Agosto 1ª-2ª settimana</option>
+                <option value="agosto2">Agosto 3ª-4ª settimana</option>
+                <option value="settembre">Settembre</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label><span class="emoji">⏱️</span> Numero settimane</label>
+            <select id="settimane" onchange="calcolaPreventivo()">
+                <option value="1">1 settimana</option>
+                <option value="2">2 settimane</option>
+                <option value="3">3 settimane</option>
+                <option value="4">4 settimane</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label><span class="emoji">👥</span> Numero persone</label>
+            <select id="persone" onchange="calcolaPreventivo()">
+                <option value="1">1 persona</option>
+                <option value="2">2 persone</option>
+                <option value="3">3 persone</option>
+                <option value="4">4 persone</option>
+            </select>
+            <div id="capacityWarning" class="capacity-info" style="color: #e74c3c; display: none;"></div>
+        </div>
+
+        <div class="form-group">
+            <label><span class="emoji">🛏️</span> Servizi extra</label>
+            <div class="checkbox-group">
+                <input type="checkbox" id="biancheria" onchange="calcolaPreventivo()">
+                <label for="biancheria">Biancheria (€10-20/giorno)</label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="checkbox-group">
+                <input type="checkbox" id="cane" onchange="calcolaPreventivo()">
+                <label for="cane">🐕 Cane (+€10/giorno)</label>
+            </div>
+        </div>
+
+        <div id="risultato" class="result-box" style="display: none;">
+            <h2>💰 PREVENTIVO TOTALE</h2>
+            <div class="total-price" id="totale">€0</div>
+            <div class="price-details" id="dettagli"></div>
+        </div>
+
+        <div id="scontoSpiaggia" class="beach-discount" style="display: none;">
+            <span class="emoji">🏖️</span> Sconto Stabilimento Balneare
+            <strong id="scontoText"></strong>
+            <small>(dalla 3ª fila in poi)</small>
+        </div>
+
+        <p class="note">📞 Per prenotare o info contattaci su WhatsApp!</p>
+    </div>
+
+    <script>
+        const prezzi = {
+            A1:  { maggio: 350, giugno: 400, luglio1: 500, luglio2: 550, agosto1: 700, agosto2: 800, settembre: 400, capacita: [2,4] },
+            A2:  { maggio: 350, giugno: 400, luglio1: 500, luglio2: 550, agosto1: 700, agosto2: 800, settembre: 400, capacita: [2,4] },
+            B:   { maggio: 400, giugno: 450, luglio1: 600, luglio2: 650, agosto1: 800, agosto2: 900, settembre: 450, capacita: [4,4] },
+            BB:  { maggio: 300, giugno: 350, luglio1: 450, luglio2: 500, agosto1: 600, agosto2: 700, settembre: 350, capacita: [2,2] },
+            C:   { maggio: 350, giugno: 400, luglio1: 500, luglio2: 550, agosto1: 700, agosto2: 800, settembre: 400, capacita: [2,2] },
+            D:   { maggio: 400, giugno: 450, luglio1: 600, luglio2: 650, agosto1: 800, agosto2: 900, settembre: 450, capacita: [4,4] },
+            E:   { maggio: 400, giugno: 450, luglio1: 550, luglio2: 600, agosto1: 750, agosto2: 850, settembre: 450, capacita: [2,4] },
+            F:   { maggio: 450, giugno: 500, luglio1: 600, luglio2: 650, agosto1: 850, agosto2: 950, settembre: 500, capacita: [2,4] }
+        };
+
+        const scontiSpiaggia = {
+            maggio: 50, giugno: 50, luglio1: 20, luglio2: 20, agosto1: 10, agosto2: 10, settembre: 50
+        };
+
+        function calcolaPreventivo() {
+            const appart = document.getElementById('appartamento').value;
+            const periodo = document.getElementById('periodo').value;
+            const settimane = parseInt(document.getElementById('settimane').value);
+            const persone = parseInt(document.getElementById('persone').value);
+            const biancheria = document.getElementById('biancheria').checked;
+            const cane = document.getElementById('cane').checked;
+            const giorni = settimane * 7;
+
+            const risultatoDiv = document.getElementById('risultato');
+            const scontoDiv = document.getElementById('scontoSpiaggia');
+            const warningDiv = document.getElementById('capacityWarning');
+            
+            // Reset warning
+            warningDiv.style.display = 'none';
+
+            if (!appart || !periodo) {
+                risultatoDiv.style.display = 'none';
+                scontoDiv.style.display = 'none';
+                return;
+            }
+
+            // Check capacity
+            const [minCap, maxCap] = prezzi[appart].capacita;
+            if (persone > maxCap) {
+                warningDiv.textContent = `⚠️ Appartamento ${appart} ha capacità massima di ${maxCap} persone`;
+                warningDiv.style.display = 'block';
+            }
+
+            // Calculate base price
+            const prezzoSettimanale = prezzi[appart][periodo];
+            const prezzoBase = prezzoSettimanale * settimane;
+
+            // Calculate extras
+            const costoBiancheria = biancheria ? (persone <= 2 ? 10 : 20) * giorni : 0;
+            const costoCane = cane ? 10 * giorni : 0;
+            const costoPulizie = 50 * settimane;
+
+            const totale = prezzoBase + costoBiancheria + costoCane + costoPulizie;
+
+            // Build details
+            let dettagli = `
+                <div class="price-row"><span>Appartamento ${appart} (${settimane} sett.)</span><span>€${prezzoBase}</span></div>
+                <div class="price-row"><span>Pulizie</span><span>€${costoPulizie}</span></div>
+            `;
+            if (biancheria) {
+                dettagli += `<div class="price-row"><span>Biancheria (${giorni} giorni)</span><span>€${costoBiancheria}</span></div>`;
+            }
+            if (cane) {
+                dettagli += `<div class="price-row"><span>Cane (${giorni} giorni)</span><span>€${costoCane}</span></div>`;
+            }
+
+            document.getElementById('totale').textContent = `€${totale}`;
+            document.getElementById('dettagli').innerHTML = dettagli;
+            risultatoDiv.style.display = 'block';
+
+            // Show beach discount
+            const sconto = scontiSpiaggia[periodo];
+            document.getElementById('scontoText').textContent = `${sconto}% di sconto!`;
+            scontoDiv.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
