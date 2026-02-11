@@ -3,36 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Preventivo Appartamenti 2026</title>
+    <title>Calcola Preventivo Appartamenti</title>
     <style>
         * {
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            margin: 0;
-            padding: 20px;
-        }
-        .container {
             max-width: 500px;
             margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
             background: white;
             border-radius: 20px;
-            padding: 30px;
+            padding: 25px;
             box-shadow: 0 10px 40px rgba(0,0,0,0.2);
         }
         h1 {
             text-align: center;
             color: #333;
-            margin-bottom: 10px;
-            font-size: 1.8em;
+            margin-bottom: 5px;
+            font-size: 1.5em;
         }
         .subtitle {
             text-align: center;
             color: #666;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
+            font-size: 0.9em;
         }
         .form-group {
             margin-bottom: 20px;
@@ -40,12 +40,12 @@
         label {
             display: block;
             margin-bottom: 8px;
-            color: #444;
             font-weight: 600;
+            color: #444;
         }
         select, input {
             width: 100%;
-            padding: 12px 15px;
+            padding: 12px;
             border: 2px solid #e0e0e0;
             border-radius: 10px;
             font-size: 16px;
@@ -55,71 +55,46 @@
             outline: none;
             border-color: #667eea;
         }
-        .checkbox-group {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .checkbox-group input {
-            width: auto;
-        }
         
-        /* Calendar Styles */
+        /* Calendario */
         .calendar-container {
-            background: #f8f9fa;
-            border-radius: 15px;
-            padding: 15px;
             margin-bottom: 20px;
         }
         .calendar-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
         }
         .calendar-header h3 {
             margin: 0;
             color: #333;
-            font-size: 1.1em;
         }
         .calendar-nav {
-            display: flex;
-            gap: 10px;
-        }
-        .calendar-nav button {
             background: #667eea;
             color: white;
             border: none;
-            border-radius: 8px;
-            padding: 8px 15px;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            font-size: 18px;
             cursor: pointer;
-            font-weight: bold;
             transition: background 0.3s;
         }
-        .calendar-nav button:hover {
-            background: #5a6fd6;
+        .calendar-nav:hover {
+            background: #764ba2;
         }
-        .calendar-nav button:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-        }
-        .calendar-weekdays {
+        .calendar-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 5px;
-            margin-bottom: 10px;
+            gap: 4px;
         }
-        .calendar-weekdays span {
+        .calendar-day-header {
             text-align: center;
-            font-weight: bold;
+            font-weight: 600;
             color: #666;
-            font-size: 0.85em;
-            padding: 5px;
-        }
-        .calendar-days {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 5px;
+            padding: 8px 0;
+            font-size: 12px;
         }
         .calendar-day {
             aspect-ratio: 1;
@@ -127,50 +102,43 @@
             align-items: center;
             justify-content: center;
             border-radius: 50%;
-            font-size: 0.9em;
+            font-size: 14px;
             color: #999;
-            background: transparent;
-            border: none;
-            cursor: default;
+            background: #f5f5f5;
         }
         .calendar-day.saturday {
-            background: #e8f4fd;
-            color: #1a5a8a;
+            background: #e3f2fd;
+            color: #1976d2;
             cursor: pointer;
-            font-weight: bold;
+            font-weight: 600;
             transition: all 0.3s;
         }
         .calendar-day.saturday:hover {
-            background: #667eea;
-            color: white;
+            background: #bbdefb;
             transform: scale(1.1);
         }
-        .calendar-day.selected {
-            background: #25D366;
-            color: white;
+        .calendar-day.check-in {
+            background: #4caf50 !important;
+            color: white !important;
         }
-        .calendar-day.selected:hover {
-            background: #1da851;
+        .calendar-day.check-out {
+            background: #f44336 !important;
+            color: white !important;
+        }
+        .calendar-day.in-range {
+            background: #c8e6c9 !important;
+            color: #2e7d32 !important;
+            border-radius: 8px;
         }
         .calendar-day.empty {
-            visibility: hidden;
+            background: transparent;
         }
-        .selected-date-display {
-            text-align: center;
-            padding: 10px;
-            background: #e8f4fd;
-            border-radius: 10px;
-            margin-top: 15px;
-            color: #1a5a8a;
-            font-weight: 600;
-        }
-        .legend {
+        .calendar-legend {
             display: flex;
             justify-content: center;
             gap: 20px;
-            margin-top: 10px;
-            font-size: 0.8em;
-            color: #666;
+            margin-top: 15px;
+            font-size: 12px;
         }
         .legend-item {
             display: flex;
@@ -182,153 +150,167 @@
             height: 12px;
             border-radius: 50%;
         }
-        .legend-dot.available {
-            background: #e8f4fd;
-            border: 2px solid #1a5a8a;
-        }
-        .legend-dot.selected {
-            background: #25D366;
-        }
+        .legend-dot.check-in { background: #4caf50; }
+        .legend-dot.check-out { background: #f44336; }
+        .legend-dot.available { background: #e3f2fd; border: 2px solid #1976d2; }
         
+        .selection-info {
+            background: #f0f7ff;
+            border-radius: 10px;
+            padding: 12px;
+            margin-top: 15px;
+            text-align: center;
+            font-size: 14px;
+            color: #1976d2;
+            min-height: 44px;
+        }
+        .selection-info .dates {
+            font-weight: 600;
+        }
+        .selection-info .weeks {
+            color: #666;
+            font-size: 12px;
+        }
+
+        .options-row {
+            display: flex;
+            gap: 15px;
+        }
+        .options-row .form-group {
+            flex: 1;
+        }
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+        }
+        .checkbox-group label {
+            margin: 0;
+            font-weight: normal;
+        }
         .result {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 25px;
+            padding: 20px;
             border-radius: 15px;
-            margin-top: 25px;
-            text-align: center;
+            margin-top: 20px;
+            display: none;
+        }
+        .result h2 {
+            margin: 0 0 15px 0;
+            font-size: 1.3em;
+        }
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+        .result-row:last-child {
+            border-bottom: none;
         }
         .total {
-            font-size: 2.5em;
+            font-size: 1.5em;
             font-weight: bold;
-            margin: 10px 0;
-        }
-        .details {
-            font-size: 0.9em;
-            opacity: 0.9;
-            line-height: 1.6;
-        }
-        .beach-discount {
-            background: rgba(255,255,255,0.2);
-            padding: 10px;
-            border-radius: 8px;
-            margin-top: 15px;
-        }
-        .warning {
-            background: #fff3cd;
-            color: #856404;
-            padding: 10px;
-            border-radius: 8px;
             margin-top: 10px;
-            font-size: 0.9em;
+            padding-top: 10px;
+            border-top: 2px solid rgba(255,255,255,0.3);
         }
-        .btn-whatsapp {
+        .whatsapp-btn {
             display: block;
-            width: 100%;
-            background: #25D366;
+            background: #25d366;
             color: white;
-            border: none;
-            padding: 18px 25px;
-            border-radius: 12px;
-            font-size: 1.2em;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 20px;
-            text-decoration: none;
             text-align: center;
-            transition: background 0.3s, transform 0.2s;
-        }
-        .btn-whatsapp:hover {
-            background: #128C7E;
-            transform: translateY(-2px);
-        }
-        .btn-whatsapp::before {
-            content: "📱 ";
-        }
-        .info-box {
-            background: #e8f4fd;
-            padding: 15px;
+            padding: 15px 20px;
             border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
             margin-top: 20px;
-            font-size: 0.85em;
-            color: #1a5a8a;
+            font-size: 16px;
+            transition: background 0.3s;
         }
-        .info-box ul {
-            margin: 10px 0 0 0;
-            padding-left: 20px;
+        .whatsapp-btn:hover {
+            background: #128c7e;
         }
-        .info-box li {
-            margin-bottom: 5px;
+        .reset-btn {
+            display: block;
+            background: #f0f0f0;
+            color: #666;
+            text-align: center;
+            padding: 10px;
+            border-radius: 10px;
+            border: none;
+            width: 100%;
+            margin-top: 10px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .reset-btn:hover {
+            background: #e0e0e0;
+        }
+        .instruction {
+            text-align: center;
+            color: #666;
+            font-size: 13px;
+            margin-bottom: 10px;
+            padding: 10px;
+            background: #fff9e6;
+            border-radius: 8px;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🏖️ Preventivo Vacanza</h1>
-        <p class="subtitle">Calcola il costo del tuo soggiorno</p>
-        
+        <h1>🏖️ Calcola Preventivo</h1>
+        <p class="subtitle">Appartamenti Vacanze 2026</p>
+
         <div class="form-group">
             <label>🏠 Appartamento</label>
             <select id="appartamento" onchange="calcolaPreventivo()">
-                <option value="A1" data-max="4">A1 (2-4 persone)</option>
-                <option value="A2" data-max="4">A2 (2-4 persone)</option>
-                <option value="B" data-max="4">B (4 persone)</option>
-                <option value="BB" data-max="2">BB (2 persone)</option>
-                <option value="C" data-max="2">C (2 persone)</option>
-                <option value="D" data-max="4">D (4 persone)</option>
-                <option value="E" data-max="4">E (2-4 persone)</option>
-                <option value="F" data-max="4">F (2-4 persone)</option>
+                <option value="">Seleziona appartamento</option>
+                <option value="A1">A1 (2-4 persone)</option>
+                <option value="A2">A2 (2-4 persone)</option>
+                <option value="B">B (4 persone)</option>
+                <option value="BB">BB (2 persone)</option>
+                <option value="C">C (2 persone)</option>
+                <option value="D">D (4 persone)</option>
+                <option value="E">E (2-4 persone)</option>
+                <option value="F">F (2-4 persone)</option>
             </select>
         </div>
 
-        <div class="form-group">
-            <label>📅 Seleziona data check-in (solo Sabato)</label>
-            <div class="calendar-container">
-                <div class="calendar-header">
-                    <button class="calendar-nav" id="prevMonth" onclick="changeMonth(-1)">◀</button>
-                    <h3 id="monthYear"></h3>
-                    <button class="calendar-nav" id="nextMonth" onclick="changeMonth(1)">▶</button>
-                </div>
-                <div class="calendar-weekdays">
-                    <span>Lun</span>
-                    <span>Mar</span>
-                    <span>Mer</span>
-                    <span>Gio</span>
-                    <span>Ven</span>
-                    <span>Sab</span>
-                    <span>Dom</span>
-                </div>
-                <div class="calendar-days" id="calendarDays"></div>
-                <div class="legend">
-                    <div class="legend-item">
-                        <div class="legend-dot available"></div>
-                        <span>Check-in disponibile</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-dot selected"></div>
-                        <span>Selezionato</span>
-                    </div>
-                </div>
-                <div class="selected-date-display" id="selectedDateDisplay">
-                    👆 Clicca su un sabato per selezionare il check-in
-                </div>
+        <div class="calendar-container">
+            <label>📅 Seleziona Check-in e Check-out (solo sabati)</label>
+            <p class="instruction">1️⃣ Clicca il sabato di <strong>arrivo</strong>, poi 2️⃣ clicca il sabato di <strong>partenza</strong></p>
+            <div class="calendar-header">
+                <button class="calendar-nav" onclick="changeMonth(-1)">◀</button>
+                <h3 id="calendar-month">Maggio 2026</h3>
+                <button class="calendar-nav" onclick="changeMonth(1)">▶</button>
+            </div>
+            <div class="calendar-grid" id="calendar">
+                <!-- Generato da JavaScript -->
+            </div>
+            <div class="calendar-legend">
+                <div class="legend-item"><div class="legend-dot available"></div> Disponibile</div>
+                <div class="legend-item"><div class="legend-dot check-in"></div> Check-in</div>
+                <div class="legend-item"><div class="legend-dot check-out"></div> Check-out</div>
+            </div>
+            <div class="selection-info" id="selection-info">
+                Seleziona le date di arrivo e partenza
             </div>
         </div>
 
         <div class="form-group">
-            <label>📆 Numero settimane</label>
-            <select id="settimane" onchange="calcolaPreventivo()">
-                <option value="1">1 settimana</option>
-                <option value="2">2 settimane</option>
-                <option value="3">3 settimane</option>
-                <option value="4">4 settimane</option>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label>👥 Numero persone</label>
+            <label>👥 Numero Persone</label>
             <select id="persone" onchange="calcolaPreventivo()">
-                <option value="1">1 persona</option>
                 <option value="2">2 persone</option>
                 <option value="3">3 persone</option>
                 <option value="4">4 persone</option>
@@ -336,289 +318,303 @@
         </div>
 
         <div class="form-group">
-            <div class="checkbox-group">
-                <input type="checkbox" id="biancheria" onchange="calcolaPreventivo()">
-                <label for="biancheria" style="margin: 0;">🛏️ Biancheria</label>
-            </div>
-        </div>
-
-        <div class="form-group">
+            <label>🛎️ Opzioni Extra</label>
             <div class="checkbox-group">
                 <input type="checkbox" id="cane" onchange="calcolaPreventivo()">
-                <label for="cane" style="margin: 0;">🐕 Cane</label>
+                <label for="cane">🐕 Cane (+€10/giorno)</label>
+            </div>
+            <div class="checkbox-group">
+                <input type="checkbox" id="biancheria" onchange="calcolaPreventivo()">
+                <label for="biancheria">🛏️ Biancheria (+€10-20/giorno)</label>
+            </div>
+            <div class="checkbox-group">
+                <input type="checkbox" id="spiaggia" onchange="calcolaPreventivo()">
+                <label for="spiaggia">🏖️ Sconto spiaggia (dalla 3ª fila)</label>
             </div>
         </div>
 
+        <button class="reset-btn" onclick="resetCalendar()">🔄 Resetta date</button>
+
         <div class="result" id="result">
-            <div class="details" id="dettagli"></div>
-            <div class="total" id="totale">€ 0</div>
-            <div class="beach-discount" id="spiaggia"></div>
-        </div>
-
-        <div id="capacityWarning" class="warning" style="display: none;">
-            ⚠️ Attenzione: hai selezionato più persone della capienza massima dell'appartamento!
-        </div>
-
-        <a href="#" id="whatsappBtn" class="btn-whatsapp" onclick="inviaWhatsApp(event)">
-            Richiedi Prenotazione
-        </a>
-
-        <div class="info-box">
-            <strong>ℹ️ Cosa è incluso:</strong>
-            <ul>
-                <li>Pulizie: €50/settimana (incluse nel totale)</li>
-                <li>Biancheria: €10/giorno (1-2 pers.) o €20/giorno (3-4 pers.)</li>
-                <li>Cane: €10/giorno</li>
-                <li>Sconto spiaggia convenzionata (dalla 3ª fila)</li>
-            </ul>
+            <h2>📋 Riepilogo</h2>
+            <div id="dettagli"></div>
+            <a id="whatsapp-link" class="whatsapp-btn" href="#" target="_blank">
+                📱 Richiedi Prenotazione
+            </a>
         </div>
     </div>
 
     <script>
         // Prezzi settimanali per appartamento e periodo
         const prezzi = {
-            A1: { maggio: 300, giugno: 350, luglio1: 450, luglio2: 500, luglio3: 550, luglio4: 600, agosto1: 750, agosto2: 900, agosto3: 900, agosto4: 600, settembre: 350 },
-            A2: { maggio: 300, giugno: 350, luglio1: 450, luglio2: 500, luglio3: 550, luglio4: 600, agosto1: 750, agosto2: 900, agosto3: 900, agosto4: 600, settembre: 350 },
-            B: { maggio: 350, giugno: 450, luglio1: 550, luglio2: 600, luglio3: 700, luglio4: 750, agosto1: 900, agosto2: 1100, agosto3: 1100, agosto4: 700, settembre: 400 },
-            BB: { maggio: 250, giugno: 280, luglio1: 350, luglio2: 400, luglio3: 450, luglio4: 500, agosto1: 600, agosto2: 700, agosto3: 700, agosto4: 500, settembre: 280 },
-            C: { maggio: 250, giugno: 300, luglio1: 400, luglio2: 450, luglio3: 500, luglio4: 550, agosto1: 650, agosto2: 750, agosto3: 750, agosto4: 550, settembre: 300 },
-            D: { maggio: 350, giugno: 450, luglio1: 550, luglio2: 600, luglio3: 700, luglio4: 750, agosto1: 900, agosto2: 1100, agosto3: 1100, agosto4: 700, settembre: 400 },
-            E: { maggio: 300, giugno: 400, luglio1: 500, luglio2: 550, luglio3: 600, luglio4: 650, agosto1: 800, agosto2: 950, agosto3: 950, agosto4: 650, settembre: 350 },
-            F: { maggio: 300, giugno: 400, luglio1: 500, luglio2: 550, luglio3: 600, luglio4: 650, agosto1: 800, agosto2: 950, agosto3: 950, agosto4: 650, settembre: 350 }
+            'A1': { 'maggio': 300, 'giugno': 400, 'luglio1': 450, 'luglio2': 500, 'luglio3': 600, 'luglio4': 700, 'agosto1': 800, 'agosto2': 900, 'agosto3': 900, 'agosto4': 700, 'settembre': 400 },
+            'A2': { 'maggio': 300, 'giugno': 400, 'luglio1': 450, 'luglio2': 500, 'luglio3': 600, 'luglio4': 700, 'agosto1': 800, 'agosto2': 900, 'agosto3': 900, 'agosto4': 700, 'settembre': 400 },
+            'B':  { 'maggio': 350, 'giugno': 500, 'luglio1': 550, 'luglio2': 600, 'luglio3': 700, 'luglio4': 800, 'agosto1': 900, 'agosto2': 1000, 'agosto3': 1000, 'agosto4': 800, 'settembre': 500 },
+            'BB': { 'maggio': 250, 'giugno': 300, 'luglio1': 350, 'luglio2': 400, 'luglio3': 450, 'luglio4': 500, 'agosto1': 600, 'agosto2': 650, 'agosto3': 650, 'agosto4': 500, 'settembre': 300 },
+            'C':  { 'maggio': 250, 'giugno': 300, 'luglio1': 350, 'luglio2': 400, 'luglio3': 450, 'luglio4': 500, 'agosto1': 600, 'agosto2': 650, 'agosto3': 650, 'agosto4': 500, 'settembre': 300 },
+            'D':  { 'maggio': 350, 'giugno': 500, 'luglio1': 550, 'luglio2': 600, 'luglio3': 700, 'luglio4': 800, 'agosto1': 900, 'agosto2': 1000, 'agosto3': 1000, 'agosto4': 800, 'settembre': 500 },
+            'E':  { 'maggio': 300, 'giugno': 400, 'luglio1': 450, 'luglio2': 500, 'luglio3': 600, 'luglio4': 700, 'agosto1': 800, 'agosto2': 900, 'agosto3': 900, 'agosto4': 700, 'settembre': 400 },
+            'F':  { 'maggio': 300, 'giugno': 400, 'luglio1': 450, 'luglio2': 500, 'luglio3': 600, 'luglio4': 700, 'agosto1': 800, 'agosto2': 900, 'agosto3': 900, 'agosto4': 700, 'settembre': 400 }
         };
 
+        // Sconti spiaggia per periodo
         const scontiSpiaggia = {
-            maggio: 50, giugno: 50, luglio1: 20, luglio2: 20, luglio3: 20, luglio4: 20,
-            agosto1: 10, agosto2: 10, agosto3: 10, agosto4: 10, settembre: 50
+            'maggio': 50, 'giugno': 50, 'settembre': 50,
+            'luglio1': 20, 'luglio2': 20, 'luglio3': 20, 'luglio4': 20,
+            'agosto1': 10, 'agosto2': 10, 'agosto3': 10, 'agosto4': 10
         };
 
-        // Mesi disponibili (Maggio - Settembre 2026)
-        const mesiDisponibili = [
-            { anno: 2026, mese: 4, nome: 'Maggio 2026' },
-            { anno: 2026, mese: 5, nome: 'Giugno 2026' },
-            { anno: 2026, mese: 6, nome: 'Luglio 2026' },
-            { anno: 2026, mese: 7, nome: 'Agosto 2026' },
-            { anno: 2026, mese: 8, nome: 'Settembre 2026' }
-        ];
+        // Date dei sabati per ogni periodo
+        const periodiDate = {
+            '2026-05-02': 'maggio', '2026-05-09': 'maggio', '2026-05-16': 'maggio', '2026-05-23': 'maggio', '2026-05-30': 'maggio',
+            '2026-06-06': 'giugno', '2026-06-13': 'giugno', '2026-06-20': 'giugno', '2026-06-27': 'giugno',
+            '2026-07-04': 'luglio1', '2026-07-11': 'luglio2', '2026-07-18': 'luglio3', '2026-07-25': 'luglio4',
+            '2026-08-01': 'agosto1', '2026-08-08': 'agosto2', '2026-08-15': 'agosto3', '2026-08-22': 'agosto4', '2026-08-29': 'settembre',
+            '2026-09-05': 'settembre', '2026-09-12': 'settembre', '2026-09-19': 'settembre', '2026-09-26': 'settembre'
+        };
 
-        let currentMonthIndex = 0;
-        let selectedDate = null;
-        let preventivo = {};
-
-        // Funzione per determinare il periodo in base alla data
-        function getPeriodo(date) {
-            const mese = date.getMonth();
-            const giorno = date.getDate();
-            
-            if (mese === 4) return 'maggio'; // Maggio
-            if (mese === 5) return 'giugno'; // Giugno
-            if (mese === 6) { // Luglio
-                if (giorno <= 11) return 'luglio1';
-                if (giorno <= 18) return 'luglio2';
-                if (giorno <= 25) return 'luglio3';
-                return 'luglio4';
-            }
-            if (mese === 7) { // Agosto
-                if (giorno <= 8) return 'agosto1';
-                if (giorno <= 15) return 'agosto2';
-                if (giorno <= 22) return 'agosto3';
-                return 'agosto4';
-            }
-            if (mese === 8) return 'settembre'; // Settembre
-            return 'maggio';
-        }
-
-        function getNomePeriodo(periodo) {
-            const nomi = {
-                maggio: "Maggio", giugno: "Giugno", luglio1: "Luglio (1ª sett.)", luglio2: "Luglio (2ª sett.)",
-                luglio3: "Luglio (3ª sett.)", luglio4: "Luglio (4ª sett.)", agosto1: "Agosto (1ª sett.)",
-                agosto2: "Agosto (2ª sett.)", agosto3: "Agosto (3ª sett.)", agosto4: "Agosto (4ª sett.)", settembre: "Settembre"
-            };
-            return nomi[periodo] || periodo;
-        }
-
-        function formatDate(date) {
-            const giorni = ['Domenica', 'Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'];
-            const mesi = ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 
-                         'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'];
-            return `${giorni[date.getDay()]} ${date.getDate()} ${mesi[date.getMonth()]} ${date.getFullYear()}`;
-        }
-
-        function formatDateShort(date) {
-            return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
-        }
+        const mesi = ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'];
+        const giorniSettimana = ['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'];
+        
+        let currentMonth = 4; // Maggio (0-indexed)
+        let currentYear = 2026;
+        let checkInDate = null;
+        let checkOutDate = null;
 
         function renderCalendar() {
-            const meseCorrente = mesiDisponibili[currentMonthIndex];
-            const primoGiorno = new Date(meseCorrente.anno, meseCorrente.mese, 1);
-            const ultimoGiorno = new Date(meseCorrente.anno, meseCorrente.mese + 1, 0);
+            const calendar = document.getElementById('calendar');
+            const monthLabel = document.getElementById('calendar-month');
             
-            document.getElementById('monthYear').textContent = meseCorrente.nome;
+            monthLabel.textContent = `${mesi[currentMonth]} ${currentYear}`;
             
-            // Abilita/disabilita pulsanti navigazione
-            document.getElementById('prevMonth').disabled = currentMonthIndex === 0;
-            document.getElementById('nextMonth').disabled = currentMonthIndex === mesiDisponibili.length - 1;
+            let html = '';
             
-            const calendarDays = document.getElementById('calendarDays');
-            calendarDays.innerHTML = '';
+            // Header giorni settimana
+            giorniSettimana.forEach(g => {
+                html += `<div class="calendar-day-header">${g}</div>`;
+            });
             
-            // Giorni vuoti prima del primo giorno del mese
-            // getDay() restituisce 0 per Domenica, ma vogliamo Lunedì come primo giorno
-            let startDay = primoGiorno.getDay();
-            startDay = startDay === 0 ? 6 : startDay - 1; // Converti a Lunedì = 0
+            // Primo giorno del mese
+            const firstDay = new Date(currentYear, currentMonth, 1);
+            let startDay = firstDay.getDay();
+            startDay = startDay === 0 ? 6 : startDay - 1; // Lunedì = 0
             
+            // Giorni vuoti prima
             for (let i = 0; i < startDay; i++) {
-                const emptyDay = document.createElement('div');
-                emptyDay.className = 'calendar-day empty';
-                calendarDays.appendChild(emptyDay);
+                html += '<div class="calendar-day empty"></div>';
             }
             
             // Giorni del mese
-            for (let day = 1; day <= ultimoGiorno.getDate(); day++) {
-                const date = new Date(meseCorrente.anno, meseCorrente.mese, day);
-                const dayEl = document.createElement('div');
-                dayEl.className = 'calendar-day';
-                dayEl.textContent = day;
+            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+            
+            for (let day = 1; day <= daysInMonth; day++) {
+                const date = new Date(currentYear, currentMonth, day);
+                const dateStr = date.toISOString().split('T')[0];
+                const isSaturday = date.getDay() === 6;
+                const isInSeason = periodiDate.hasOwnProperty(dateStr);
                 
-                // Sabato = 6
-                if (date.getDay() === 6) {
-                    dayEl.className += ' saturday';
-                    dayEl.onclick = () => selectDate(date);
+                let classes = 'calendar-day';
+                let onclick = '';
+                
+                if (isSaturday && isInSeason) {
+                    classes += ' saturday';
+                    onclick = `onclick="selectDate('${dateStr}')"`;
                     
-                    // Controlla se è selezionato
-                    if (selectedDate && 
-                        selectedDate.getDate() === day && 
-                        selectedDate.getMonth() === meseCorrente.mese &&
-                        selectedDate.getFullYear() === meseCorrente.anno) {
-                        dayEl.className += ' selected';
+                    if (checkInDate === dateStr) {
+                        classes += ' check-in';
+                    } else if (checkOutDate === dateStr) {
+                        classes += ' check-out';
+                    } else if (checkInDate && checkOutDate) {
+                        const d = new Date(dateStr);
+                        const ci = new Date(checkInDate);
+                        const co = new Date(checkOutDate);
+                        if (d > ci && d < co) {
+                            classes += ' in-range';
+                        }
                     }
                 }
                 
-                calendarDays.appendChild(dayEl);
+                html += `<div class="${classes}" ${onclick}>${day}</div>`;
             }
+            
+            calendar.innerHTML = html;
+            updateSelectionInfo();
         }
 
-        function changeMonth(delta) {
-            currentMonthIndex += delta;
-            if (currentMonthIndex < 0) currentMonthIndex = 0;
-            if (currentMonthIndex >= mesiDisponibili.length) currentMonthIndex = mesiDisponibili.length - 1;
+        function selectDate(dateStr) {
+            if (!checkInDate) {
+                // Prima selezione: check-in
+                checkInDate = dateStr;
+                checkOutDate = null;
+            } else if (!checkOutDate) {
+                // Seconda selezione: check-out
+                if (new Date(dateStr) > new Date(checkInDate)) {
+                    checkOutDate = dateStr;
+                } else {
+                    // Se clicca una data precedente, diventa il nuovo check-in
+                    checkInDate = dateStr;
+                    checkOutDate = null;
+                }
+            } else {
+                // Reset e nuova selezione
+                checkInDate = dateStr;
+                checkOutDate = null;
+            }
+            
             renderCalendar();
-        }
-
-        function selectDate(date) {
-            selectedDate = date;
-            renderCalendar();
-            
-            // Calcola check-out (sabato successivo)
-            const checkOut = new Date(date);
-            checkOut.setDate(checkOut.getDate() + 7);
-            
-            document.getElementById('selectedDateDisplay').innerHTML = 
-                `✅ Check-in: <strong>${formatDate(date)}</strong>`;
-            
             calcolaPreventivo();
         }
 
-        function calcolaPreventivo() {
-            if (!selectedDate) {
-                document.getElementById('dettagli').innerHTML = '👆 Seleziona una data di check-in';
-                document.getElementById('totale').textContent = '€ --';
-                document.getElementById('spiaggia').innerHTML = '';
-                return;
-            }
-
-            const appSelect = document.getElementById('appartamento');
-            const app = appSelect.value;
-            const maxPersone = parseInt(appSelect.options[appSelect.selectedIndex].dataset.max);
-            const settimane = parseInt(document.getElementById('settimane').value);
-            const persone = parseInt(document.getElementById('persone').value);
-            const biancheria = document.getElementById('biancheria').checked;
-            const cane = document.getElementById('cane').checked;
-
-            // Warning capacità
-            const warningEl = document.getElementById('capacityWarning');
-            warningEl.style.display = persone > maxPersone ? 'block' : 'none';
-
-            // Determina periodo dalla data selezionata
-            const periodo = getPeriodo(selectedDate);
-            
-            // Calcola check-out
-            const checkOut = new Date(selectedDate);
-            checkOut.setDate(checkOut.getDate() + (7 * settimane));
-
-            // Calcoli
-            const prezzoBase = prezzi[app][periodo] * settimane;
-            const pulizie = 50 * settimane;
-            const giorniTotali = settimane * 7;
-            
-            let costoBiancheria = 0;
-            if (biancheria) {
-                costoBiancheria = persone <= 2 ? 10 * giorniTotali : 20 * giorniTotali;
-            }
-            
-            const costoCane = cane ? 10 * giorniTotali : 0;
-            const totale = prezzoBase + pulizie + costoBiancheria + costoCane;
-            const scontoSpiaggia = scontiSpiaggia[periodo];
-
-            // Salva preventivo per WhatsApp
-            preventivo = {
-                appartamento: app,
-                checkIn: formatDateShort(selectedDate),
-                checkOut: formatDateShort(checkOut),
-                periodo: getNomePeriodo(periodo),
-                settimane: settimane,
-                persone: persone,
-                biancheria: biancheria,
-                cane: cane,
-                prezzoBase: prezzoBase,
-                pulizie: pulizie,
-                costoBiancheria: costoBiancheria,
-                costoCane: costoCane,
-                totale: totale,
-                scontoSpiaggia: scontoSpiaggia
-            };
-
-            // Mostra risultato
-            let dettagli = `Appartamento ${app} • ${getNomePeriodo(periodo)}<br>`;
-            dettagli += `📅 ${formatDateShort(selectedDate)} → ${formatDateShort(checkOut)}<br>`;
-            dettagli += `${settimane} settimana/e • ${persone} persona/e<br><br>`;
-            dettagli += `Soggiorno: €${prezzoBase}<br>`;
-            dettagli += `Pulizie: €${pulizie}`;
-            if (biancheria) dettagli += `<br>Biancheria: €${costoBiancheria}`;
-            if (cane) dettagli += `<br>Cane: €${costoCane}`;
-
-            document.getElementById('dettagli').innerHTML = dettagli;
-            document.getElementById('totale').textContent = `€ ${totale}`;
-            document.getElementById('spiaggia').innerHTML = `🏖️ Sconto spiaggia convenzionata: <strong>${scontoSpiaggia}%</strong><br><small>(dalla 3ª fila in poi)</small>`;
+        function resetCalendar() {
+            checkInDate = null;
+            checkOutDate = null;
+            renderCalendar();
+            document.getElementById('result').style.display = 'none';
         }
 
-        function inviaWhatsApp(e) {
-            e.preventDefault();
+        function updateSelectionInfo() {
+            const info = document.getElementById('selection-info');
             
-            if (!selectedDate) {
-                alert('Seleziona prima una data di check-in!');
-                return;
+            if (!checkInDate) {
+                info.innerHTML = 'Seleziona le date di arrivo e partenza';
+            } else if (!checkOutDate) {
+                const ciFormatted = formatDate(checkInDate);
+                info.innerHTML = `<div class="dates">Check-in: ${ciFormatted}</div><div class="weeks">Ora seleziona il sabato di partenza</div>`;
+            } else {
+                const ciFormatted = formatDate(checkInDate);
+                const coFormatted = formatDate(checkOutDate);
+                const weeks = getWeeksBetween(checkInDate, checkOutDate);
+                info.innerHTML = `<div class="dates">${ciFormatted} → ${coFormatted}</div><div class="weeks">${weeks} settiman${weeks === 1 ? 'a' : 'e'}</div>`;
+            }
+        }
+
+        function formatDate(dateStr) {
+            const d = new Date(dateStr);
+            return d.toLocaleDateString('it-IT', { day: 'numeric', month: 'long' });
+        }
+
+        function getWeeksBetween(startStr, endStr) {
+            const start = new Date(startStr);
+            const end = new Date(endStr);
+            const diffTime = Math.abs(end - start);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            return Math.round(diffDays / 7);
+        }
+
+        function getWeeklyPeriods(startStr, endStr) {
+            // Restituisce array di periodi per ogni settimana tra check-in e check-out
+            const periods = [];
+            let current = new Date(startStr);
+            const end = new Date(endStr);
+            
+            while (current < end) {
+                const dateStr = current.toISOString().split('T')[0];
+                if (periodiDate[dateStr]) {
+                    periods.push({
+                        date: dateStr,
+                        periodo: periodiDate[dateStr]
+                    });
+                }
+                current.setDate(current.getDate() + 7);
             }
             
-            let messaggio = `Ciao! Vorrei prenotare:\n\n`;
-            messaggio += `🏠 Appartamento: ${preventivo.appartamento}\n`;
-            messaggio += `📅 Check-in: ${preventivo.checkIn}\n`;
-            messaggio += `📅 Check-out: ${preventivo.checkOut}\n`;
-            messaggio += `📆 Settimane: ${preventivo.settimane}\n`;
-            messaggio += `👥 Persone: ${preventivo.persone}\n`;
-            messaggio += `🛏️ Biancheria: ${preventivo.biancheria ? 'Sì' : 'No'}\n`;
-            messaggio += `🐕 Cane: ${preventivo.cane ? 'Sì' : 'No'}\n\n`;
-            messaggio += `💰 Totale preventivo: €${preventivo.totale}\n\n`;
-            messaggio += `Attendo conferma disponibilità. Grazie!`;
+            return periods;
+        }
 
-            const numeroWhatsApp = '393514707090';
-            const url = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(messaggio)}`;
-            window.open(url, '_blank');
+        function changeMonth(delta) {
+            currentMonth += delta;
+            
+            if (currentMonth < 4) currentMonth = 4; // Min: Maggio
+            if (currentMonth > 8) currentMonth = 8; // Max: Settembre
+            
+            renderCalendar();
+        }
+
+        function calcolaPreventivo() {
+            const appartamento = document.getElementById('appartamento').value;
+            
+            if (!appartamento || !checkInDate || !checkOutDate) {
+                document.getElementById('result').style.display = 'none';
+                return;
+            }
+
+            const persone = parseInt(document.getElementById('persone').value);
+            const cane = document.getElementById('cane').checked;
+            const biancheria = document.getElementById('biancheria').checked;
+            const spiaggia = document.getElementById('spiaggia').checked;
+
+            const weeklyPeriods = getWeeklyPeriods(checkInDate, checkOutDate);
+            const numSettimane = weeklyPeriods.length;
+            const numGiorni = numSettimane * 7;
+            
+            // Calcola totale appartamento per ogni settimana
+            let totaleAppartamento = 0;
+            let dettaglioSettimane = [];
+            
+            weeklyPeriods.forEach((wp, index) => {
+                const prezzoSettimana = prezzi[appartamento][wp.periodo];
+                totaleAppartamento += prezzoSettimana;
+                dettaglioSettimane.push(`Sett. ${index + 1}: €${prezzoSettimana}`);
+            });
+
+            // Extra
+            let totaleCane = cane ? (10 * numGiorni) : 0;
+            let totaleBiancheria = biancheria ? ((persone <= 2 ? 10 : 20) * numGiorni) : 0;
+            let totalePulizie = 50 * numSettimane;
+            
+            // Sconto spiaggia (media degli sconti per i periodi)
+            let totaleSconto = 0;
+            if (spiaggia) {
+                weeklyPeriods.forEach(wp => {
+                    const scontoPerc = scontiSpiaggia[wp.periodo];
+                    const prezzoSettimana = prezzi[appartamento][wp.periodo];
+                    totaleSconto += prezzoSettimana * (scontoPerc / 100);
+                });
+            }
+
+            const totaleFinale = totaleAppartamento + totaleCane + totaleBiancheria + totalePulizie - totaleSconto;
+
+            // Formatta date per display
+            const checkInFormatted = formatDate(checkInDate);
+            const checkOutFormatted = formatDate(checkOutDate);
+
+            // Mostra risultato
+            let dettagliHtml = `
+                <div class="result-row"><span>🏠 ${appartamento} (${numSettimane} sett.)</span><span>€${totaleAppartamento}</span></div>
+            `;
+            
+            if (cane) dettagliHtml += `<div class="result-row"><span>🐕 Cane (${numGiorni}gg)</span><span>€${totaleCane}</span></div>`;
+            if (biancheria) dettagliHtml += `<div class="result-row"><span>🛏️ Biancheria (${numGiorni}gg)</span><span>€${totaleBiancheria}</span></div>`;
+            dettagliHtml += `<div class="result-row"><span>🧹 Pulizie (${numSettimane}x)</span><span>€${totalePulizie}</span></div>`;
+            if (spiaggia) dettagliHtml += `<div class="result-row"><span>🏖️ Sconto spiaggia</span><span>-€${Math.round(totaleSconto)}</span></div>`;
+            dettagliHtml += `<div class="result-row"><span>📅 Periodo</span><span>${checkInFormatted} - ${checkOutFormatted}</span></div>`;
+            dettagliHtml += `<div class="result-row total"><span>TOTALE</span><span>€${Math.round(totaleFinale)}</span></div>`;
+
+            document.getElementById('dettagli').innerHTML = dettagliHtml;
+            document.getElementById('result').style.display = 'block';
+
+            // Prepara messaggio WhatsApp
+            let extras = [];
+            if (cane) extras.push('con cane');
+            if (biancheria) extras.push('biancheria');
+            if (spiaggia) extras.push('sconto spiaggia');
+            const extrasText = extras.length > 0 ? `\n🛎️ Extra: ${extras.join(', ')}` : '';
+
+            const messaggio = `Ciao! Vorrei prenotare:
+🏠 Appartamento: ${appartamento}
+📅 Check-in: ${checkInFormatted} 2026
+📅 Check-out: ${checkOutFormatted} 2026
+👥 Persone: ${persone}${extrasText}
+💰 Totale preventivo: €${Math.round(totaleFinale)}
+
+Attendo conferma disponibilità. Grazie!`;
+
+            const whatsappUrl = `https://wa.me/393514707090?text=${encodeURIComponent(messaggio)}`;
+            document.getElementById('whatsapp-link').href = whatsappUrl;
         }
 
         // Inizializza
         renderCalendar();
-        calcolaPreventivo();
     </script>
 </body>
 </html>
