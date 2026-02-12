@@ -224,6 +224,22 @@
             padding-top: 10px;
             border-top: 2px solid rgba(255,255,255,0.3);
         }
+        .lido-bonus {
+            background: rgba(255,255,255,0.15);
+            border-radius: 10px;
+            padding: 12px;
+            margin-top: 15px;
+            text-align: center;
+            border: 2px dashed rgba(255,255,255,0.4);
+        }
+        .lido-bonus-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .lido-bonus-text {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
         .whatsapp-btn {
             display: block;
             background: #25d366;
@@ -286,6 +302,11 @@
             padding: 10px;
             background: #fff9e6;
             border-radius: 8px;
+        }
+        .email-note {
+            font-size: 11px;
+            color: #888;
+            margin-top: 4px;
         }
     
     /* Gallery */
@@ -427,6 +448,12 @@
         </div>
 
         <div class="form-group">
+            <label>📧 Email</label>
+            <input type="email" id="email" placeholder="tua@email.com" onchange="calcolaPreventivo()">
+            <p class="email-note">Riceverai il ticket sconto lido dopo il pagamento</p>
+        </div>
+
+        <div class="form-group">
             <label>🛎️ Opzioni Extra</label>
             <div class="checkbox-group">
                 <input type="checkbox" id="cane" onchange="calcolaPreventivo()">
@@ -438,7 +465,7 @@
             </div>
             <div class="checkbox-group">
                 <input type="checkbox" id="spiaggia" onchange="calcolaPreventivo()">
-                <label for="spiaggia">🏖️ Sconto spiaggia (dalla 3ª fila)</label>
+                <label for="spiaggia">🏖️ Voglio lo sconto al Lido Le Canne (dalla 3ª fila)</label>
             </div>
         </div>
 
@@ -447,6 +474,10 @@
         <div class="result" id="result">
             <h2>📋 Riepilogo</h2>
             <div id="dettagli"></div>
+            <div id="lidoBonus" class="lido-bonus" style="display: none;">
+                <div class="lido-bonus-title">🎫 Bonus Lido Le Canne incluso!</div>
+                <div class="lido-bonus-text" id="lidoBonusText"></div>
+            </div>
             <a id="whatsapp-link" class="whatsapp-btn" href="#" target="_blank">
                 📱 Richiedi Prenotazione (WhatsApp)
             </a>
@@ -470,8 +501,8 @@
             'F':  { 'maggio': 300, 'giugno': 400, 'luglio1': 450, 'luglio2': 500, 'luglio3': 600, 'luglio4': 700, 'agosto1': 800, 'agosto2': 900, 'agosto3': 900, 'agosto4': 700, 'settembre': 400 }
         };
 
-        // Sconti spiaggia per periodo
-        const scontiSpiaggia = {
+        // Sconti lido per periodo (solo informativo, non applicato al prezzo)
+        const scontiLido = {
             'maggio': 50, 'giugno': 50, 'settembre': 50,
             'luglio1': 20, 'luglio2': 20, 'luglio3': 20, 'luglio4': 20,
             'agosto1': 10, 'agosto2': 10, 'agosto3': 10, 'agosto4': 10
@@ -660,6 +691,7 @@
             }
 
             const persone = parseInt(document.getElementById('persone').value);
+            const email = document.getElementById('email').value;
             const cane = document.getElementById('cane').checked;
             const biancheria = document.getElementById('biancheria').checked;
             const spiaggia = document.getElementById('spiaggia').checked;
@@ -682,18 +714,23 @@
             let totaleCane = cane ? (10 * numGiorni) : 0;
             let totaleBiancheria = biancheria ? ((persone <= 2 ? 10 : 20) * numGiorni) : 0;
             let totalePulizie = 50 * numSettimane;
-            
-            // Sconto spiaggia (media degli sconti per i periodi)
-            let totaleSconto = 0;
-            if (spiaggia) {
-                weeklyPeriods.forEach(wp => {
-                    const scontoPerc = scontiSpiaggia[wp.periodo];
-                    const prezzoSettimana = prezzi[appartamento][wp.periodo];
-                    totaleSconto += prezzoSettimana * (scontoPerc / 100);
-                });
-            }
 
-            const totaleFinale = totaleAppartamento + totaleCane + totaleBiancheria + totalePulizie - totaleSconto;
+            // Totale SENZA sconto (lo sconto lido è da usare al lido, non sull'appartamento)
+            const totaleFinale = totaleAppartamento + totaleCane + totaleBiancheria + totalePulizie;
+
+            // Calcola info sconto lido (solo se selezionato)
+            let scontoLidoInfo = '';
+            if (spiaggia) {
+                const scontiPerPeriodo = weeklyPeriods.map(wp => scontiLido[wp.periodo]);
+                const scontoMin = Math.min(...scontiPerPeriodo);
+                const scontoMax = Math.max(...scontiPerPeriodo);
+                
+                if (scontoMin === scontoMax) {
+                    scontoLidoInfo = `Sconto ${scontoMin}% al Lido Le Canne (dalla 3ª fila)`;
+                } else {
+                    scontoLidoInfo = `Sconto ${scontoMin}-${scontoMax}% al Lido Le Canne (dalla 3ª fila)`;
+                }
+            }
 
             // Formatta date per display
             const checkInFormatted = formatDate(checkInDate);
@@ -707,25 +744,34 @@
             if (cane) dettagliHtml += `<div class="result-row"><span>🐕 Cane (${numGiorni}gg)</span><span>€${totaleCane}</span></div>`;
             if (biancheria) dettagliHtml += `<div class="result-row"><span>🛏️ Biancheria (${numGiorni}gg)</span><span>€${totaleBiancheria}</span></div>`;
             dettagliHtml += `<div class="result-row"><span>🧹 Pulizie (${numSettimane}x)</span><span>€${totalePulizie}</span></div>`;
-            if (spiaggia) dettagliHtml += `<div class="result-row"><span>🏖️ Sconto spiaggia</span><span>-€${Math.round(totaleSconto)}</span></div>`;
             dettagliHtml += `<div class="result-row"><span>📅 Periodo</span><span>${checkInFormatted} - ${checkOutFormatted}</span></div>`;
             dettagliHtml += `<div class="result-row total"><span>TOTALE</span><span>€${Math.round(totaleFinale)}</span></div>`;
 
             document.getElementById('dettagli').innerHTML = dettagliHtml;
             document.getElementById('result').style.display = 'block';
 
+            // Mostra/nascondi bonus lido
+            const lidoBonusDiv = document.getElementById('lidoBonus');
+            const lidoBonusText = document.getElementById('lidoBonusText');
+            if (spiaggia) {
+                lidoBonusText.textContent = scontoLidoInfo + '. Riceverai il ticket via email dopo il pagamento.';
+                lidoBonusDiv.style.display = 'block';
+            } else {
+                lidoBonusDiv.style.display = 'none';
+            }
+
             // Prepara messaggio WhatsApp
             let extras = [];
             if (cane) extras.push('con cane');
             if (biancheria) extras.push('biancheria');
-            if (spiaggia) extras.push('sconto spiaggia');
             const extrasText = extras.length > 0 ? `\n🛎️ Extra: ${extras.join(', ')}` : '';
+            const scontoText = spiaggia ? `\n🏖️ Richiesto: Sconto Lido Le Canne` : '';
 
             const messaggio = `Ciao! Vorrei prenotare:
 🏠 Appartamento: ${appartamento}
 📅 Check-in: ${checkInFormatted} 2026
 📅 Check-out: ${checkOutFormatted} 2026
-👥 Persone: ${persone}${extrasText}
+👥 Persone: ${persone}${extrasText}${scontoText}
 💰 Totale preventivo: €${Math.round(totaleFinale)}
 
 Attendo conferma disponibilità. Grazie!`;
@@ -733,8 +779,10 @@ Attendo conferma disponibilità. Grazie!`;
             const whatsappUrl = `https://wa.me/393514707090?text=${encodeURIComponent(messaggio)}`;
             document.getElementById('whatsapp-link').href = whatsappUrl;
             
-            // PayPal link
-            const paypalDescription = `Appartamento ${appartamento} - ${checkInFormatted} a ${checkOutFormatted} 2026 - ${persone} persone`;
+            // PayPal link con email inclusa
+            const scontoPaypal = spiaggia ? ' - SCONTO LIDO' : '';
+            const emailPaypal = email ? ` - Email: ${email}` : '';
+            const paypalDescription = `Apt ${appartamento} - ${checkInFormatted} a ${checkOutFormatted} 2026 - ${persone} pers${scontoPaypal}${emailPaypal}`;
             const paypalUrl = `https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=salentonuovo@gmail.com&amount=${Math.round(totaleFinale)}&currency_code=EUR&item_name=${encodeURIComponent(paypalDescription)}&no_shipping=1`;
             document.getElementById('paypal-link').href = paypalUrl;
         }
