@@ -240,6 +240,28 @@
         .whatsapp-btn:hover {
             background: #128c7e;
         }
+        .paypal-btn {
+            display: block;
+            background: #0070ba;
+            color: white;
+            text-align: center;
+            padding: 15px 20px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            margin-top: 10px;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+        .paypal-btn:hover {
+            background: #003087;
+        }
+        .btn-divider {
+            text-align: center;
+            color: rgba(255,255,255,0.7);
+            margin: 10px 0 5px 0;
+            font-size: 12px;
+        }
         .reset-btn {
             display: block;
             background: #f0f0f0;
@@ -265,80 +287,6 @@
             background: #fff9e6;
             border-radius: 8px;
         }
-    
-    /* Gallery */
-    .gallery-container {
-        margin: 20px 0;
-        display: none;
-    }
-    .gallery-container.active {
-        display: block;
-    }
-    .gallery-title {
-        font-weight: bold;
-        margin-bottom: 10px;
-        color: #1e3a5f;
-    }
-    .gallery {
-        display: flex;
-        gap: 10px;
-        overflow-x: auto;
-        padding: 10px 0;
-        scroll-snap-type: x mandatory;
-    }
-    .gallery img {
-        height: 150px;
-        width: auto;
-        border-radius: 8px;
-        cursor: pointer;
-        scroll-snap-align: start;
-        transition: transform 0.2s;
-    }
-    .gallery img:hover {
-        transform: scale(1.05);
-    }
-    /* Lightbox */
-    .lightbox {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0,0,0,0.9);
-        z-index: 1000;
-        justify-content: center;
-        align-items: center;
-    }
-    .lightbox.active {
-        display: flex;
-    }
-    .lightbox img {
-        max-width: 90%;
-        max-height: 90%;
-        border-radius: 8px;
-    }
-    .lightbox-close {
-        position: absolute;
-        top: 20px;
-        right: 30px;
-        font-size: 40px;
-        color: white;
-        cursor: pointer;
-    }
-    .lightbox-nav {
-        position: absolute;
-        top: 50%;
-        transform: translateY(-50%);
-        font-size: 50px;
-        color: white;
-        cursor: pointer;
-        padding: 20px;
-        user-select: none;
-    }
-    .lightbox-prev { left: 10px; }
-    .lightbox-next { right: 10px; }
-
     </style>
 </head>
 <body>
@@ -361,19 +309,6 @@
             </select>
         </div>
 
-        <div class="gallery-container" id="galleryContainer">
-            <div class="gallery-title">📸 Foto Appartamento <span id="galleryAptName"></span></div>
-            <div class="gallery" id="gallery"></div>
-        </div>
-        
-        <!-- Lightbox -->
-        <div class="lightbox" id="lightbox">
-            <span class="lightbox-close" onclick="closeLightbox()">&times;</span>
-            <span class="lightbox-nav lightbox-prev" onclick="navigateLightbox(-1)">&#10094;</span>
-            <img id="lightboxImg" src="">
-            <span class="lightbox-nav lightbox-next" onclick="navigateLightbox(1)">&#10095;</span>
-        </div>
-
         <div class="calendar-container">
             <label>📅 Seleziona Check-in e Check-out (solo sabati)</label>
             <p class="instruction">1️⃣ Clicca il sabato di <strong>arrivo</strong>, poi 2️⃣ clicca il sabato di <strong>partenza</strong></p>
@@ -382,9 +317,7 @@
                 <h3 id="calendar-month">Maggio 2026</h3>
                 <button class="calendar-nav" onclick="changeMonth(1)">▶</button>
             </div>
-            <div class="calendar-grid" id="calendar">
-                <!-- Generato da JavaScript -->
-            </div>
+            <div class="calendar-grid" id="calendar"></div>
             <div class="calendar-legend">
                 <div class="legend-item"><div class="legend-dot available"></div> Disponibile</div>
                 <div class="legend-item"><div class="legend-dot check-in"></div> Check-in</div>
@@ -426,13 +359,16 @@
             <h2>📋 Riepilogo</h2>
             <div id="dettagli"></div>
             <a id="whatsapp-link" class="whatsapp-btn" href="#" target="_blank">
-                📱 Richiedi Prenotazione
+                📱 Richiedi Prenotazione (WhatsApp)
+            </a>
+            <div class="btn-divider">oppure paga direttamente</div>
+            <a id="paypal-link" class="paypal-btn" href="#" target="_blank">
+                💳 Paga con PayPal
             </a>
         </div>
     </div>
 
     <script>
-        // Prezzi settimanali per appartamento e periodo
         const prezzi = {
             'A1': { 'maggio': 300, 'giugno': 400, 'luglio1': 450, 'luglio2': 500, 'luglio3': 600, 'luglio4': 700, 'agosto1': 800, 'agosto2': 900, 'agosto3': 900, 'agosto4': 700, 'settembre': 400 },
             'A2': { 'maggio': 300, 'giugno': 400, 'luglio1': 450, 'luglio2': 500, 'luglio3': 600, 'luglio4': 700, 'agosto1': 800, 'agosto2': 900, 'agosto3': 900, 'agosto4': 700, 'settembre': 400 },
@@ -444,14 +380,12 @@
             'F':  { 'maggio': 300, 'giugno': 400, 'luglio1': 450, 'luglio2': 500, 'luglio3': 600, 'luglio4': 700, 'agosto1': 800, 'agosto2': 900, 'agosto3': 900, 'agosto4': 700, 'settembre': 400 }
         };
 
-        // Sconti spiaggia per periodo
         const scontiSpiaggia = {
             'maggio': 50, 'giugno': 50, 'settembre': 50,
             'luglio1': 20, 'luglio2': 20, 'luglio3': 20, 'luglio4': 20,
             'agosto1': 10, 'agosto2': 10, 'agosto3': 10, 'agosto4': 10
         };
 
-        // Date dei sabati per ogni periodo
         const periodiDate = {
             '2026-05-02': 'maggio', '2026-05-09': 'maggio', '2026-05-16': 'maggio', '2026-05-23': 'maggio', '2026-05-30': 'maggio',
             '2026-06-06': 'giugno', '2026-06-13': 'giugno', '2026-06-20': 'giugno', '2026-06-27': 'giugno',
@@ -463,12 +397,11 @@
         const mesi = ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'];
         const giorniSettimana = ['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'];
         
-        let currentMonth = 4; // Maggio (0-indexed)
+        let currentMonth = 4;
         let currentYear = 2026;
         let checkInDate = null;
         let checkOutDate = null;
 
-        // Funzione per formattare data in formato locale (evita bug UTC)
         function toLocalDateStr(date) {
             const year = date.getFullYear();
             const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -479,83 +412,45 @@
         function renderCalendar() {
             const calendar = document.getElementById('calendar');
             const monthLabel = document.getElementById('calendar-month');
-            
             monthLabel.textContent = `${mesi[currentMonth]} ${currentYear}`;
-            
             let html = '';
-            
-            // Header giorni settimana
-            giorniSettimana.forEach(g => {
-                html += `<div class="calendar-day-header">${g}</div>`;
-            });
-            
-            // Primo giorno del mese
+            giorniSettimana.forEach(g => { html += `<div class="calendar-day-header">${g}</div>`; });
             const firstDay = new Date(currentYear, currentMonth, 1);
             let startDay = firstDay.getDay();
-            startDay = startDay === 0 ? 6 : startDay - 1; // Lunedì = 0
-            
-            // Giorni vuoti prima
-            for (let i = 0; i < startDay; i++) {
-                html += '<div class="calendar-day empty"></div>';
-            }
-            
-            // Giorni del mese
+            startDay = startDay === 0 ? 6 : startDay - 1;
+            for (let i = 0; i < startDay; i++) { html += '<div class="calendar-day empty"></div>'; }
             const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-            
             for (let day = 1; day <= daysInMonth; day++) {
                 const date = new Date(currentYear, currentMonth, day);
                 const dateStr = toLocalDateStr(date);
                 const isSaturday = date.getDay() === 6;
                 const isInSeason = periodiDate.hasOwnProperty(dateStr);
-                
                 let classes = 'calendar-day';
                 let onclick = '';
-                
                 if (isSaturday && isInSeason) {
                     classes += ' saturday';
                     onclick = `onclick="selectDate('${dateStr}')"`;
-                    
-                    if (checkInDate === dateStr) {
-                        classes += ' check-in';
-                    } else if (checkOutDate === dateStr) {
-                        classes += ' check-out';
-                    } else if (checkInDate && checkOutDate) {
+                    if (checkInDate === dateStr) { classes += ' check-in'; }
+                    else if (checkOutDate === dateStr) { classes += ' check-out'; }
+                    else if (checkInDate && checkOutDate) {
                         const d = new Date(dateStr);
                         const ci = new Date(checkInDate);
                         const co = new Date(checkOutDate);
-                        if (d > ci && d < co) {
-                            classes += ' in-range';
-                        }
+                        if (d > ci && d < co) { classes += ' in-range'; }
                     }
                 }
-                
                 html += `<div class="${classes}" ${onclick}>${day}</div>`;
             }
-            
             calendar.innerHTML = html;
             updateSelectionInfo();
         }
 
         function selectDate(dateStr) {
-            if (!checkInDate) {
-                // Prima selezione: check-in
-                checkInDate = dateStr;
-                checkOutDate = null;
-            } else if (!checkOutDate) {
-                // Seconda selezione: check-out
-                if (new Date(dateStr) > new Date(checkInDate)) {
-                    checkOutDate = dateStr;
-                } else {
-                    // Se clicca una data precedente, diventa il nuovo check-in
-                    checkInDate = dateStr;
-                    checkOutDate = null;
-                }
-            } else {
-                // Reset e nuova selezione
-                checkInDate = dateStr;
-                checkOutDate = null;
-            }
-            
+            if (!checkInDate) { checkInDate = dateStr; checkOutDate = null; }
+            else if (!checkOutDate) {
+                if (new Date(dateStr) > new Date(checkInDate)) { checkOutDate = dateStr; }
+                else { checkInDate = dateStr; checkOutDate = null; }
+            } else { checkInDate = dateStr; checkOutDate = null; }
             renderCalendar();
             calcolaPreventivo();
         }
@@ -569,10 +464,8 @@
 
         function updateSelectionInfo() {
             const info = document.getElementById('selection-info');
-            
-            if (!checkInDate) {
-                info.innerHTML = 'Seleziona le date di arrivo e partenza';
-            } else if (!checkOutDate) {
+            if (!checkInDate) { info.innerHTML = 'Seleziona le date di arrivo e partenza'; }
+            else if (!checkOutDate) {
                 const ciFormatted = formatDate(checkInDate);
                 info.innerHTML = `<div class="dates">Check-in: ${ciFormatted}</div><div class="weeks">Ora seleziona il sabato di partenza</div>`;
             } else {
@@ -597,174 +490,67 @@
         }
 
         function getWeeklyPeriods(startStr, endStr) {
-            // Restituisce array di periodi per ogni settimana tra check-in e check-out
             const periods = [];
             let current = new Date(startStr);
             const end = new Date(endStr);
-            
             while (current < end) {
                 const dateStr = toLocalDateStr(current);
-                if (periodiDate[dateStr]) {
-                    periods.push({
-                        date: dateStr,
-                        periodo: periodiDate[dateStr]
-                    });
-                }
+                if (periodiDate[dateStr]) { periods.push({ date: dateStr, periodo: periodiDate[dateStr] }); }
                 current.setDate(current.getDate() + 7);
             }
-            
             return periods;
         }
 
         function changeMonth(delta) {
             currentMonth += delta;
-            
-            if (currentMonth < 4) currentMonth = 4; // Min: Maggio
-            if (currentMonth > 8) currentMonth = 8; // Max: Settembre
-            
+            if (currentMonth < 4) currentMonth = 4;
+            if (currentMonth > 8) currentMonth = 8;
             renderCalendar();
         }
 
         function calcolaPreventivo() {
             const appartamento = document.getElementById('appartamento').value;
-            
-            if (!appartamento || !checkInDate || !checkOutDate) {
-                document.getElementById('result').style.display = 'none';
-                return;
-            }
-
+            if (!appartamento || !checkInDate || !checkOutDate) { document.getElementById('result').style.display = 'none'; return; }
             const persone = parseInt(document.getElementById('persone').value);
             const cane = document.getElementById('cane').checked;
             const biancheria = document.getElementById('biancheria').checked;
             const spiaggia = document.getElementById('spiaggia').checked;
-
             const weeklyPeriods = getWeeklyPeriods(checkInDate, checkOutDate);
             const numSettimane = weeklyPeriods.length;
             const numGiorni = numSettimane * 7;
-            
-            // Calcola totale appartamento per ogni settimana
             let totaleAppartamento = 0;
-            let dettaglioSettimane = [];
-            
-            weeklyPeriods.forEach((wp, index) => {
-                const prezzoSettimana = prezzi[appartamento][wp.periodo];
-                totaleAppartamento += prezzoSettimana;
-                dettaglioSettimane.push(`Sett. ${index + 1}: €${prezzoSettimana}`);
-            });
-
-            // Extra
+            weeklyPeriods.forEach((wp) => { totaleAppartamento += prezzi[appartamento][wp.periodo]; });
             let totaleCane = cane ? (10 * numGiorni) : 0;
             let totaleBiancheria = biancheria ? ((persone <= 2 ? 10 : 20) * numGiorni) : 0;
             let totalePulizie = 50 * numSettimane;
-            
-            // Sconto spiaggia (media degli sconti per i periodi)
             let totaleSconto = 0;
-            if (spiaggia) {
-                weeklyPeriods.forEach(wp => {
-                    const scontoPerc = scontiSpiaggia[wp.periodo];
-                    const prezzoSettimana = prezzi[appartamento][wp.periodo];
-                    totaleSconto += prezzoSettimana * (scontoPerc / 100);
-                });
-            }
-
+            if (spiaggia) { weeklyPeriods.forEach(wp => { totaleSconto += prezzi[appartamento][wp.periodo] * (scontiSpiaggia[wp.periodo] / 100); }); }
             const totaleFinale = totaleAppartamento + totaleCane + totaleBiancheria + totalePulizie - totaleSconto;
-
-            // Formatta date per display
             const checkInFormatted = formatDate(checkInDate);
             const checkOutFormatted = formatDate(checkOutDate);
-
-            // Mostra risultato
-            let dettagliHtml = `
-                <div class="result-row"><span>🏠 ${appartamento} (${numSettimane} sett.)</span><span>€${totaleAppartamento}</span></div>
-            `;
-            
+            let dettagliHtml = `<div class="result-row"><span>🏠 ${appartamento} (${numSettimane} sett.)</span><span>€${totaleAppartamento}</span></div>`;
             if (cane) dettagliHtml += `<div class="result-row"><span>🐕 Cane (${numGiorni}gg)</span><span>€${totaleCane}</span></div>`;
             if (biancheria) dettagliHtml += `<div class="result-row"><span>🛏️ Biancheria (${numGiorni}gg)</span><span>€${totaleBiancheria}</span></div>`;
             dettagliHtml += `<div class="result-row"><span>🧹 Pulizie (${numSettimane}x)</span><span>€${totalePulizie}</span></div>`;
             if (spiaggia) dettagliHtml += `<div class="result-row"><span>🏖️ Sconto spiaggia</span><span>-€${Math.round(totaleSconto)}</span></div>`;
             dettagliHtml += `<div class="result-row"><span>📅 Periodo</span><span>${checkInFormatted} - ${checkOutFormatted}</span></div>`;
             dettagliHtml += `<div class="result-row total"><span>TOTALE</span><span>€${Math.round(totaleFinale)}</span></div>`;
-
             document.getElementById('dettagli').innerHTML = dettagliHtml;
             document.getElementById('result').style.display = 'block';
-
-            // Prepara messaggio WhatsApp
             let extras = [];
             if (cane) extras.push('con cane');
             if (biancheria) extras.push('biancheria');
             if (spiaggia) extras.push('sconto spiaggia');
             const extrasText = extras.length > 0 ? `\n🛎️ Extra: ${extras.join(', ')}` : '';
-
             const messaggio = `Ciao! Vorrei prenotare:\n🏠 Appartamento: ${appartamento}\n📅 Check-in: ${checkInFormatted} 2026\n📅 Check-out: ${checkOutFormatted} 2026\n👥 Persone: ${persone}${extrasText}\n💰 Totale preventivo: €${Math.round(totaleFinale)}\n\nAttendo conferma disponibilità. Grazie!`;
-
             const whatsappUrl = `https://wa.me/393514707090?text=${encodeURIComponent(messaggio)}`;
             document.getElementById('whatsapp-link').href = whatsappUrl;
+            const paypalDescription = `Appartamento ${appartamento} - ${checkInFormatted} a ${checkOutFormatted} 2026 - ${persone} persone`;
+            const paypalUrl = `https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=salentonuovo@gmail.com&amount=${Math.round(totaleFinale)}&currency_code=EUR&item_name=${encodeURIComponent(paypalDescription)}&no_shipping=1`;
+            document.getElementById('paypal-link').href = paypalUrl;
         }
 
-        // Inizializza
         renderCalendar();
-    
-    // Photo galleries for apartments
-    const apartmentPhotos = {
-        'E': [
-            'foto/E/E_01.jpg', 'foto/E/E_02.jpg', 'foto/E/E_03.jpg', 
-            'foto/E/E_04.jpg', 'foto/E/E_05.jpg', 'foto/E/E_06.jpg',
-            'foto/E/E_07.jpg', 'foto/E/E_08.jpg', 'foto/E/E_09.jpg', 'foto/E/E_10.jpg'
-        ]
-        // Add more apartments here as photos are uploaded
-    };
-    
-    let currentLightboxIndex = 0;
-    let currentPhotos = [];
-    
-    function updateGallery(apt) {
-        const container = document.getElementById('galleryContainer');
-        const gallery = document.getElementById('gallery');
-        const aptName = document.getElementById('galleryAptName');
-        
-        if (apartmentPhotos[apt] && apartmentPhotos[apt].length > 0) {
-            currentPhotos = apartmentPhotos[apt];
-            aptName.textContent = apt;
-            gallery.innerHTML = currentPhotos.map((src, i) => 
-                `<img src="${src}" alt="Foto ${i+1}" onclick="openLightbox(${i})">`
-            ).join('');
-            container.classList.add('active');
-        } else {
-            container.classList.remove('active');
-            currentPhotos = [];
-        }
-    }
-    
-    function openLightbox(index) {
-        currentLightboxIndex = index;
-        document.getElementById('lightboxImg').src = currentPhotos[index];
-        document.getElementById('lightbox').classList.add('active');
-    }
-    
-    function closeLightbox() {
-        document.getElementById('lightbox').classList.remove('active');
-    }
-    
-    function navigateLightbox(direction) {
-        currentLightboxIndex += direction;
-        if (currentLightboxIndex >= currentPhotos.length) currentLightboxIndex = 0;
-        if (currentLightboxIndex < 0) currentLightboxIndex = currentPhotos.length - 1;
-        document.getElementById('lightboxImg').src = currentPhotos[currentLightboxIndex];
-    }
-    
-    // Close lightbox on escape key
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') closeLightbox();
-        if (e.key === 'ArrowRight') navigateLightbox(1);
-        if (e.key === 'ArrowLeft') navigateLightbox(-1);
-    });
-    
-    // Update gallery when apartment changes
-    const originalAptChange = document.getElementById('appartamento').onchange;
-    document.getElementById('appartamento').addEventListener('change', function() {
-        updateGallery(this.value);
-    });
-
     </script>
 </body>
 </html>
